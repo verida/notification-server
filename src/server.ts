@@ -1,7 +1,7 @@
 import express from 'express'
 import bodyParser from 'body-parser'
 import router from './routes'
-import DbManager from './dbManager'
+import Db from './db'
 
 import dotenv from 'dotenv'
 dotenv.config()
@@ -13,7 +13,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(router)
 
-DbManager.ensureDb(process.env.DB_DEVICE_LOOKUP)
+Db.init()
 
 const PORT = process.env.PORT ? process.env.PORT : 5011;
 app.listen(PORT, () => {
