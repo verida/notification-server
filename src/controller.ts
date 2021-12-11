@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import Db from './db'
+import Firebase from './firebase'
 
 export default class Controller {
 
@@ -61,12 +62,15 @@ export default class Controller {
 
         try {
             const deviceId = await Db.getDevice(did)
-            console.log('found deviceId', deviceId)
-            // @todo: send a silent PN to deviceId to refresh inbox
-
+            console.log('found deviceId: ', deviceId)
+            const success = await Firebase.ping(did, deviceId)
         } catch (err: any) {
-            // don't respond with an error as we don't want the sender
-            // to know if a DID does / doesn't have a Vault
+            // don't respond with any error as we don't want the sender
+            // to know if a DID does / doesn't have a Vault or any information
+            // about this server's internals
+            if (err.error != 'not_found') {
+                console.error(err)
+            }
         }
 
         return res.status(200).send({
