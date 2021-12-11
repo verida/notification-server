@@ -10,13 +10,14 @@ dotenv.config()
 
 // Set up the express app
 const app = express()
+const validator = new RequestValidator()
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(basicAuth({
-  authorizer: RequestValidator.authorize,
+  authorizer: validator.authorize,
   authorizeAsync: true,
-  unauthorizedResponse: RequestValidator.getUnauthorizedResponse
+  unauthorizedResponse: validator.getUnauthorizedResponse
 }))
 app.use(router)
 
