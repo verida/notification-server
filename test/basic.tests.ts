@@ -19,6 +19,20 @@ let context: Context
 let SENDER_DID: string
 let SENDER_SIG: string
 
+const account = new AutoAccount({
+    defaultDatabaseServer: {
+        type: 'VeridaDatabase',
+        endpointUri: VERIDA_TESTNET_DEFAULT_SERVER
+    },
+    defaultMessageServer: {
+        type: 'VeridaMessage',
+        endpointUri: VERIDA_TESTNET_DEFAULT_SERVER
+    }
+}, {
+    privateKey: SENDER_PRIVATE_KEY, 
+    environment: VERIDA_ENVIRONMENT
+})
+
 const getAxios = async () => {
     const config: any = {
         headers: {
@@ -34,26 +48,9 @@ const getAxios = async () => {
             client: {
                 environment: VERIDA_ENVIRONMENT
             },
-            account: new AutoAccount({
-                defaultDatabaseServer: {
-                    type: 'VeridaDatabase',
-                    endpointUri: VERIDA_TESTNET_DEFAULT_SERVER
-                },
-                defaultMessageServer: {
-                    type: 'VeridaMessage',
-                    endpointUri: VERIDA_TESTNET_DEFAULT_SERVER
-                },
-                /*defaultNotificationServer: {
-                    type: 'VeridaNofication',
-                    endpointUri: SERVER_URL
-                }*/
-            }, {
-                privateKey: SENDER_PRIVATE_KEY, 
-                environment: VERIDA_ENVIRONMENT
-            })
+            account
         })
 
-        const account = context.getAccount()
         SENDER_DID = (await account.did()).toLowerCase()
         const keyring = await account.keyring(SENDER_CONTEXT)
         const keys = await keyring.publicKeys()
@@ -78,21 +75,16 @@ describe("Test server", function() {
         it("Register a new device", async () => {
             server = await getAxios()
 
-            try {
-                const response: any = await server.post(SERVER_URL + 'register', {
-                    data: {
-                        did: RECIPIENT_DID,
-                        context: RECIPIENT_CONTEXT,
-                        deviceId: RECIPIENT_DEVICE_ID
-                    }
-                })
+            const response: any = await server.post(SERVER_URL + 'register', {
+                data: {
+                    did: RECIPIENT_DID,
+                    context: RECIPIENT_CONTEXT,
+                    deviceId: RECIPIENT_DEVICE_ID
+                }
+            })
 
-                assert.ok(response && response.data, 'Have a valid response')
-                assert.equal(response.data.status, 'success', 'Have a success response')
-            } catch (err: any) {
-                console.log('broken')
-                //console.log(err)
-            }
+            assert.ok(response && response.data, 'Have a valid response')
+            assert.equal(response.data.status, 'success', 'Have a success response')
         })
 
         it("Register a device with no params", async () => {
