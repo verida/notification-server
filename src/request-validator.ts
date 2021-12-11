@@ -15,9 +15,9 @@ export default class RequestValidator {
      * @param {*} password 
      * @param {*} req 
      */
-    public static async authorize(did: string, signature: string, req: Request, cb: any) {
+    public authorize(did: string, signature: string, req: any, cb: any) {
         did = did.replace(/_/g, ":").toLowerCase()
-        const storageContext = req.headers.get('context-name')
+        const storageContext = req.headers['context-name']
         const cacheKey = `${did}/${storageContext}`
 
         const authCheck = async () => {
@@ -44,7 +44,7 @@ export default class RequestValidator {
                     }
                 }
 
-                const result = didDocument.verifySig(consentMessage, signature)
+                const result = didDocument.verifyContextSignature(consentMessage, storageContext, signature)
 
                 if (!result) {
                     cb(null, false)
@@ -64,7 +64,7 @@ export default class RequestValidator {
         })
     }
 
-    public static getUnauthorizedResponse(req: Request) {
+    public getUnauthorizedResponse(req: Request) {
         return {
             status: "fail",
             code: 90,
