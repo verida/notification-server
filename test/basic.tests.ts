@@ -53,7 +53,6 @@ const getAxios = async () => {
 
         SENDER_DID = (await account.did()).toLowerCase()
         const keyring = await account.keyring(SENDER_CONTEXT)
-        const keys = await keyring.publicKeys()
         SENDER_SIG = await keyring.sign(`Access the notification service using context: "${SENDER_CONTEXT}"?\n\n${SENDER_DID}`)
     }
     
