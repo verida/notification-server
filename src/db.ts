@@ -1,22 +1,34 @@
 import Nano from 'nano'
+import EncryptionUtils from '@verida/encryption-utils'
 
 export default class Db {
 
     static _couchDb: Nano.ServerScope
 
-    public static async saveDevice(deviceId: string, did: string): Promise<void> {
+    public static async saveDevice(deviceId: string, did: string, context: string): Promise<void> {
         const couch = Db.getCouch()
         const db = couch.db.use(process.env.DB_DEVICE_LOOKUP)
+        const uniqueId = Db.hash(did, context)
+
         const data: any = {
-            _id: did,
+            _id: uniqueId,
+            context,
             deviceId
         }
 
         // fetch any existing record and make sure we set the _rev so the
         // existing DID will be updated
-        const existing = await db.get(did)
-        if (existing) {
-            data._rev = existing._rev
+        try {
+            const existing = await db.get(uniqueId)
+            if (existing) {
+                data._rev = existing._rev
+            }
+        } catch (err: any) {
+            // Document may not be found, so continue
+            if (err.error != 'not_found') {
+                // If an unknown error, then send to error log
+                throw err
+            }
         }
 
         // save the new record
@@ -26,13 +38,25 @@ export default class Db {
         }
     }
 
-    public static async getDevice(did: string): Promise<string> {
+    public static async getDevice(did: string, context: string): Promise<string | undefined> {
         const couch = Db.getCouch()
         const db = couch.db.use(process.env.DB_DEVICE_LOOKUP)
-        const doc = await db.get(did)
+        const uniqueId = Db.hash(did, context)
 
-        // @ts-ignore
-        return doc.deviceId
+        try {
+            const doc = await db.get(uniqueId)
+
+            // @ts-ignore
+            return doc.deviceId
+        } catch (err: any) {
+            // Document may not be found, so continue
+            if (err.error != 'not_found') {
+                // If an unknown error, then send to error log
+                throw err
+            }
+
+            return
+        }
     }
 
     public static async init(): Promise<void> {
@@ -69,6 +93,11 @@ export default class Db {
     public static buildDsn(username: string, password: string) {
         const env = process.env
         return env.DB_PROTOCOL + "://" + username + ":" + password + "@" + env.DB_HOST + ":" + env.DB_PORT
+    }
+
+    public static hash(did: string, context: string): string {
+        did = did.toLowerCase()
+        return EncryptionUtils.hash(`${did}/${context}`)
     }
 
 

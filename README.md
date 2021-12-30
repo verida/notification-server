@@ -47,5 +47,4 @@ Run the tests with `yarn run tests`
 
 ## @TODO:
 
-- Need to support application context notifications, not did notifications
 - Add verifying (see @todo)

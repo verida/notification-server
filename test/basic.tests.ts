@@ -103,7 +103,8 @@ describe("Test server", function() {
             const promise = new Promise((resolve, rejects) => {
                 server.post(SERVER_URL + 'register', {
                     data: {
-                        deviceId: RECIPIENT_DEVICE_ID
+                        deviceId: RECIPIENT_DEVICE_ID,
+                        context: RECIPIENT_CONTEXT
                     }
                 }).then(rejects, resolve)
             })
@@ -113,11 +114,27 @@ describe("Test server", function() {
             assert.equal(result.response.data.message, 'No DID specified', 'Request has expected message')
         })
 
+        it("Register a device with no context", async () => {
+            const promise = new Promise((resolve, rejects) => {
+                server.post(SERVER_URL + 'register', {
+                    data: {
+                        deviceId: RECIPIENT_DEVICE_ID,
+                        did: RECIPIENT_DID
+                    }
+                }).then(rejects, resolve)
+            })
+
+            const result: any = await promise
+            assert.equal(result.response.data.status, 'fail', 'Request failed')
+            assert.equal(result.response.data.message, 'No context specified', 'Request has expected message')
+        })
+
         it("Register a device with no deviceId", async () => {
             const promise = new Promise((resolve, rejects) => {
                 server.post(SERVER_URL + 'register', {
                     data: {
-                        did: RECIPIENT_DID
+                        did: RECIPIENT_DID,
+                        context: RECIPIENT_CONTEXT
                     }
                 }).then(rejects, resolve)
             })
@@ -130,7 +147,8 @@ describe("Test server", function() {
         it("Ping a valid device", async () => {
             const response = await server.post(SERVER_URL + 'ping', {
                 data: {
-                    did: RECIPIENT_DID
+                    did: RECIPIENT_DID,
+                    context: RECIPIENT_CONTEXT
                 }
             })
 
@@ -141,7 +159,8 @@ describe("Test server", function() {
         it("Ping an invalid device DID", async () => {
             const response = await server.post(SERVER_URL + 'ping', {
                 data: {
-                    did: 'adxfadfadadxf'
+                    did: 'adxfadfadadxf',
+                    context: RECIPIENT_CONTEXT
                 }
             })
 
