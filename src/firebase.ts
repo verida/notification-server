@@ -5,12 +5,13 @@ export default class Firebase {
 
     public static _fbInit: boolean = false
 
-    public static async ping(did: string, deviceId: string): Promise<boolean> {
+    public static async ping(did: string, context: string, deviceId: string): Promise<boolean> {
         Firebase.init()
 
         const message = {
             data: {
-                did
+                did,
+                context
             },
             token: deviceId
         }
