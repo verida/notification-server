@@ -13,6 +13,7 @@ export default class Controller {
      */
     public static async register(req: Request, res: Response): Promise<Response> {
         const did = <string> req.body.data.did
+        const context = <string> req.body.data.context
         const deviceId = <string> req.body.data.deviceId
 
         // todo verify signature
@@ -24,6 +25,13 @@ export default class Controller {
             })
         }
 
+        if (!context) {
+            return res.status(400).send({
+                status: "fail",
+                message: "No context specified"
+            })
+        }
+
         if (!deviceId) {
             return res.status(400).send({
                 status: "fail",
@@ -32,12 +40,13 @@ export default class Controller {
         }
 
         // Save deviceId and DID mapping
-        await Db.saveDevice(deviceId, did)
+        await Db.saveDevice(deviceId, did, context)
 
         return res.status(200).send({
             status: "success",
             data: {
                 did,
+                context,
                 deviceId
             }
         })
@@ -52,6 +61,7 @@ export default class Controller {
      */
     public static async ping(req: Request, res: Response): Promise<Response> {
         const did = <string> req.body.data.did
+        const context = <string> req.body.data.context
 
         if (!did) {
             return res.status(400).send({
@@ -60,8 +70,15 @@ export default class Controller {
             })
         }
 
+        if (!context) {
+            return res.status(400).send({
+                status: "fail",
+                message: "No context specified"
+            })
+        }
+
         try {
-            const deviceId = await Db.getDevice(did)
+            const deviceId = await Db.getDevice(did, context)
             console.log('Sending ping to deviceId: ', deviceId)
             const success = await Firebase.ping(did, deviceId)
         } catch (err: any) {
