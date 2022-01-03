@@ -3,6 +3,11 @@ import Axios from 'axios'
 import { Network, EnvironmentType, Context } from '@verida/client-ts'
 import { AutoAccount } from '@verida/account-node'
 
+import dotenv from 'dotenv'
+dotenv.config()
+
+import Db from '../src/db'
+
 const VERIDA_ENVIRONMENT = EnvironmentType.TESTNET
 const VERIDA_TESTNET_DEFAULT_SERVER = 'https://db.testnet.verida.io:5002/'
 
@@ -14,6 +19,7 @@ const SENDER_PRIVATE_KEY = '0x78d3b996ec98a9a536efdffbae40e5eaaf117765a587483c69
 const RECIPIENT_DID = 'did:vda:0x6B2a1bE81ee770cbB4648801e343E135e8D2Aa6F'
 const RECIPIENT_CONTEXT = 'Verida Test: Fake Vault'
 const RECIPIENT_DEVICE_ID = 'testDeviceId'
+const RECIPIENT_DEVICE_ID2 = 'testDeviceId2'
 
 let context: Context
 let SENDER_DID: string
@@ -142,6 +148,44 @@ describe("Test server", function() {
             const result: any = await promise
             assert.equal(result.response.data.status, 'fail', 'Request failed')
             assert.equal(result.response.data.message, 'No deviceId specified', 'Request has expected message')
+        })
+
+        it("Register the same device again", async () => {
+            server = await getAxios()
+
+            const response: any = await server.post(SERVER_URL + 'register', {
+                data: {
+                    did: RECIPIENT_DID,
+                    context: RECIPIENT_CONTEXT,
+                    deviceId: RECIPIENT_DEVICE_ID
+                }
+            })
+
+            assert.ok(response && response.data, 'Have a valid response')
+            assert.equal(response.data.status, 'success', 'Have a success response')
+
+            const deviceIds = await Db.getDevices(RECIPIENT_DID, RECIPIENT_CONTEXT)
+            assert.equal(deviceIds.length, 1, 'A single device is returned')
+        })
+
+        it("Register a second device", async () => {
+            server = await getAxios()
+
+            const response: any = await server.post(SERVER_URL + 'register', {
+                data: {
+                    did: RECIPIENT_DID,
+                    context: RECIPIENT_CONTEXT,
+                    deviceId: RECIPIENT_DEVICE_ID2
+                }
+            })
+
+            assert.ok(response && response.data, 'Have a valid response')
+            assert.equal(response.data.status, 'success', 'Have a success response')
+
+            const deviceIds = await Db.getDevices(RECIPIENT_DID, RECIPIENT_CONTEXT)
+            assert.equal(deviceIds.length, 2, 'Two devices are returned')
+            assert.ok(deviceIds.indexOf(RECIPIENT_DEVICE_ID) != -1, 'Device1 found')
+            assert.ok(deviceIds.indexOf(RECIPIENT_DEVICE_ID2) != -1, 'Device2 found')
         })
     })
 
