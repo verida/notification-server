@@ -5,6 +5,15 @@ export default class Db {
 
     static _couchDb: Nano.ServerScope
 
+    /**
+     * Save a device, linked to a given `did` and `context` combination.
+     * 
+     * A `did` and `context` may be linked to multiple devices
+     * 
+     * @param deviceId Device ID to link
+     * @param did Verida DID (did:vda:0x....)
+     * @param context Application context
+     */
     public static async saveDevice(deviceId: string, did: string, context: string): Promise<void> {
         const couch = Db.getCouch()
         const db = couch.db.use(process.env.DB_DEVICE_LOOKUP)
@@ -13,15 +22,23 @@ export default class Db {
         const data: any = {
             _id: uniqueId,
             context,
-            deviceId
+            deviceIds: [deviceId]
         }
 
         // fetch any existing record and make sure we set the _rev so the
         // existing DID will be updated
         try {
-            const existing = await db.get(uniqueId)
+            const existing: any = await db.get(uniqueId)
             if (existing) {
                 data._rev = existing._rev
+
+                // merge deviceIds
+                if (existing.deviceIds && existing.deviceIds.length) {
+                    data.deviceIds = existing.deviceIds
+                    if (data.deviceIds.indexOf(deviceId) == -1) {
+                        data.deviceIds.push(deviceId)
+                    }
+                }
             }
         } catch (err: any) {
             // Document may not be found, so continue
@@ -38,7 +55,7 @@ export default class Db {
         }
     }
 
-    public static async getDevice(did: string, context: string): Promise<string | undefined> {
+    public static async getDevices(did: string, context: string): Promise<Array<string> | undefined> {
         const couch = Db.getCouch()
         const db = couch.db.use(process.env.DB_DEVICE_LOOKUP)
         const uniqueId = Db.hash(did, context)
@@ -47,7 +64,7 @@ export default class Db {
             const doc = await db.get(uniqueId)
 
             // @ts-ignore
-            return doc.deviceId
+            return doc.deviceIds
         } catch (err: any) {
             // Document may not be found, so continue
             if (err.error != 'not_found') {
