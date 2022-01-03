@@ -187,6 +187,45 @@ describe("Test server", function() {
             assert.ok(deviceIds.indexOf(RECIPIENT_DEVICE_ID) != -1, 'Device1 found')
             assert.ok(deviceIds.indexOf(RECIPIENT_DEVICE_ID2) != -1, 'Device2 found')
         })
+
+        it("Unregister the second device", async () => {
+            server = await getAxios()
+
+            const response: any = await server.post(SERVER_URL + 'unregister', {
+                data: {
+                    did: RECIPIENT_DID,
+                    context: RECIPIENT_CONTEXT,
+                    deviceId: RECIPIENT_DEVICE_ID2
+                }
+            })
+
+            assert.ok(response && response.data, 'Have a valid response')
+            assert.equal(response.data.status, 'success', 'Have a success response')
+
+            const deviceIds = await Db.getDevices(RECIPIENT_DID, RECIPIENT_CONTEXT)
+            assert.equal(deviceIds.length, 1, 'One device is returned')
+            assert.ok(deviceIds.indexOf(RECIPIENT_DEVICE_ID) != -1, 'Device1 found')
+        })
+
+        it("Unregister invalid device", async () => {
+            server = await getAxios()
+
+            const promise = new Promise((resolve, rejects) => {
+                server.post(SERVER_URL + 'unregister', {
+                    data: {
+                        did: RECIPIENT_DID,
+                        context: RECIPIENT_CONTEXT,
+                        deviceId: 'akldajfklajdkfl'
+                    }
+                }).then(rejects, resolve)
+            })
+
+            const result: any = await promise
+            const response = result.response
+
+            assert.ok(response && response.data, 'Have a valid response')
+            assert.equal(response.data.status, 'fail', 'Have a failure response')
+        })
     })
 
     describe("Ping device functionality", function() {

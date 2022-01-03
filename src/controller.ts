@@ -16,7 +16,7 @@ export default class Controller {
         const context = <string> req.body.data.context
         const deviceId = <string> req.body.data.deviceId
 
-        // todo verify signature
+        // @todo verify signature
 
         if (!did) {
             return res.status(400).send({
@@ -50,6 +50,57 @@ export default class Controller {
                 deviceId
             }
         })
+    }
+
+    public static async unregister(req: Request, res: Response): Promise<Response> {
+        const did = <string> req.body.data.did
+        const context = <string> req.body.data.context
+        const deviceId = <string> req.body.data.deviceId
+
+        // @todo verify signature
+        console.log('unregister')
+
+        if (!did) {
+            return res.status(400).send({
+                status: "fail",
+                message: "No DID specified"
+            })
+        }
+
+        if (!context) {
+            return res.status(400).send({
+                status: "fail",
+                message: "No context specified"
+            })
+        }
+
+        if (!deviceId) {
+            return res.status(400).send({
+                status: "fail",
+                message: "No deviceId specified"
+            })
+        }
+
+        // Remove deviceId
+        const success = await Db.removeDevice(deviceId, did, context)
+
+        if (success) {
+            console.log('a')
+            return res.status(200).send({
+                status: "success",
+                data: {
+                    did,
+                    context,
+                    deviceId
+                }
+            })
+        } else {
+            console.log('b')
+            return res.status(400).send({
+                status: "fail",
+                message: "Invalid deviceId"
+            })
+        }
     }
 
     /**
