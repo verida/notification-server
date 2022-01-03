@@ -68,7 +68,7 @@ let server: any
 
 describe("Test server", function() {
 
-    describe("Basic functionality", function() {
+    describe("Register device functionality", function() {
         this.timeout(100000)
 
         it("Register a new device", async () => {
@@ -143,6 +143,10 @@ describe("Test server", function() {
             assert.equal(result.response.data.status, 'fail', 'Request failed')
             assert.equal(result.response.data.message, 'No deviceId specified', 'Request has expected message')
         })
+    })
+
+    describe("Ping device functionality", function() {
+        this.timeout(100000)
 
         it("Ping a valid device", async () => {
             const response = await server.post(SERVER_URL + 'ping', {
