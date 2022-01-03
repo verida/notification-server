@@ -55,6 +55,48 @@ export default class Db {
         }
     }
 
+    public static async removeDevice(deviceId: string, did: string, context: string): Promise<boolean> {
+        const couch = Db.getCouch()
+        const db = couch.db.use(process.env.DB_DEVICE_LOOKUP)
+        const uniqueId = Db.hash(did, context)
+
+        let existing: any
+
+        // fetch existing record and make sure we set the _rev so the
+        // existing DID will be updated
+        try {
+            existing = await db.get(uniqueId)
+
+            if (!existing || !existing.deviceIds || !existing.deviceIds.length) {
+                return false
+            }
+
+            const index = existing.deviceIds.indexOf(deviceId)
+            if (index == -1) {
+                // Device can't be removed as it doesn't exist
+                return false
+            }
+
+            existing.deviceIds.splice(index, 1)
+        } catch (err: any) {
+            // Document may not be found, so continue
+            if (err.error != 'not_found') {
+                // If an unknown error, then send to error log
+                throw err
+            }
+
+            return false
+        }
+
+        // save the new record
+        const response = await db.insert(existing)
+        if (!response.ok) {
+            throw new Error(`Unable to save DID / Device lookup`)
+        }
+
+        return true
+    }
+
     public static async getDevices(did: string, context: string): Promise<Array<string> | undefined> {
         const couch = Db.getCouch()
         const db = couch.db.use(process.env.DB_DEVICE_LOOKUP)
