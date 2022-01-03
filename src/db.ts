@@ -33,9 +33,11 @@ export default class Db {
                 data._rev = existing._rev
 
                 // merge deviceIds
-                data.deviceIds = existing.deviceIds
-                if (data.deviceIds.indexOf(deviceId) == -1) {
-                    data.deviceIds.push(deviceId)
+                if (existing.deviceIds && existing.deviceIds.length) {
+                    data.deviceIds = existing.deviceIds
+                    if (data.deviceIds.indexOf(deviceId) == -1) {
+                        data.deviceIds.push(deviceId)
+                    }
                 }
             }
         } catch (err: any) {

@@ -79,14 +79,18 @@ export default class Controller {
 
         try {
             const deviceIds = await Db.getDevices(did, context)
-            console.log('Sending ping to deviceIds: ', deviceIds)
 
-            deviceIds.forEach(deviceId => async () =>  {
-                const success = await Firebase.ping(did, context, deviceId)
-                if (!success) {
-                    console.log('deviceId notification failed: ' + deviceId)
-                }
-            });
+            if (deviceIds) {
+                console.log('Sending ping to deviceIds: ', deviceIds)
+                deviceIds.forEach(deviceId => async () =>  {
+                    const success = await Firebase.ping(did, context, deviceId)
+                    if (!success) {
+                        console.log('deviceId notification failed: ' + deviceId)
+                    }
+                });
+            } else {
+                console.log('No deviceIds found')
+            }
         } catch (err: any) {
             // don't respond with any error as we don't want the sender
             // to know if a DID does / doesn't have a Vault or any information
