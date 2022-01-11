@@ -35,11 +35,19 @@ Open `.env` to specify the CouchDB database connection details, Firebase credent
 
 ### Starting
 
-Start the server by running `yarn run start`
+Start the server locally by running `yarn run start`
+
+The testnet installation is documented in the [infrastructure project](https://github.com/verida/infrastructure/blob/develop/notification_server.md)
 
 ## Tests
 
 Run the tests with `yarn run tests`
+
+## Deployment
+
+See https://github.com/verida/infrastructure/blob/develop/notification_server.md
+
+Logs are available on CloudWatch. See the link above for more information. 
 
 ## Limitations
 
