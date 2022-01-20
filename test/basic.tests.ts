@@ -177,7 +177,12 @@ describe("Test server", function() {
                     context: RECIPIENT_CONTEXT,
                     deviceId: RECIPIENT_DEVICE_ID2
                 }
-            })
+            })await server.post(SERVER_URL + 'register', {
+                data: {
+                    did: RECIPIENT_DID,
+                    context: RECIPIENT_CONTEXT,
+                    deviceId: RECIPIENT_DEVICE_ID
+                }
 
             assert.ok(response && response.data, 'Have a valid response')
             assert.equal(response.data.status, 'success', 'Have a success response')
