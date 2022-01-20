@@ -130,27 +130,16 @@ export default class Controller {
 
         try {
             const deviceIds = await Db.getDevices(did, context)
-            console.log('SDervices ', deviceIds);
-            if (deviceIds) {
-                console.log('Sending ping to deviceIds: ', deviceIds)
 
-                let length = deviceIds.length;
-                
-                for (let x=0; x<= length-1 ; x++){
-                    console.log("****" + deviceIds[x])
-                    const success = await Firebase.ping(did, context, deviceIds[x])
+            if (deviceIds) {
+                console.log(`Sending ping to deviceIds: :- ${deviceIds}`);
+
+                for(const deviceId in deviceIds) {
+                    const success = await Firebase.ping(did, context, deviceId);
                     if (!success) {
-                        console.log('deviceId notification failed: ' + deviceIds[x])
+                        console.log(`deviceId notification failed :- ${deviceId}`);
                     }
                 }
-
-                // deviceIds.forEach(deviceId => async () =>  {
-                //     console.log("****" + deviceId)
-                //     const success = await Firebase.ping(did, context, deviceId)
-                //     if (!success) {
-                //         console.log('deviceId notification failed: ' + deviceId)
-                //     }
-                // });
             } else {
                 console.log('No deviceIds found')
             }
