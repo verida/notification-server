@@ -7,7 +7,6 @@ export default class Firebase {
 
     public static async ping(did: string, context: string, deviceId: string): Promise<boolean> {
         Firebase.init()
-
         const message = {
             data: {
                 did,
@@ -18,7 +17,8 @@ export default class Firebase {
 
         try {
             const result = await messaging().send(message)
-            console.log(`Firebase pinged for device: ${deviceId} (${did})`)
+            console.log(`Firebase pinged for device: ${deviceId} (${did})`);
+            console.log(`Firebase response:- ${result}`);
             return true
         } catch (err: any) {
             if (err.errorInfo && err.errorInfo.message == 'The registration token is not a valid FCM registration token') {
