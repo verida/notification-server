@@ -134,7 +134,7 @@ export default class Controller {
             if (deviceIds) {
                 console.log(`Sending ping to deviceIds: :- ${deviceIds}`);
 
-                for(const deviceId in deviceIds) {
+                for(const deviceId of deviceIds) {
                     const success = await Firebase.ping(did, context, deviceId);
                     if (!success) {
                         console.log(`deviceId notification failed :- ${deviceId}`);
