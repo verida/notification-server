@@ -1,5 +1,6 @@
 const { cert, initializeApp } = require("firebase-admin/app")
 import { messaging } from 'firebase-admin'
+import { Message } from 'firebase-admin/lib/messaging/messaging-api'
 
 export default class Firebase {
 
@@ -7,12 +8,22 @@ export default class Firebase {
 
     public static async ping(did: string, context: string, deviceId: string): Promise<boolean> {
         Firebase.init()
-        const message = {
+        const message: Message = {
             data: {
                 did,
                 context
             },
-            token: deviceId
+            token: deviceId,
+            android: {
+                priority: 'high'
+            },
+            apns: {
+                payload: {
+                    aps: {
+                        contentAvailable: true
+                    }
+                }
+            }
         }
 
         try {
