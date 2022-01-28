@@ -1,0 +1,10 @@
+{
+  "lambda": {
+    "role": "verida_notification-server-executor",
+    "name": "verida_notification-server",
+    "region": "us-east-2"
+  },
+  "api": {
+    "id": "vii2i9go8j"
+  }
+}
