@@ -125,8 +125,13 @@ export default class Db {
         try {
             await couch.db.create(dbName)
             console.log("Created database: " + dbName)
-        } catch (err) {
-            console.log("Database existed: " + dbName)
+        } catch (err: unknown) {
+            if (err instanceof Error ) {
+                console.log `Error creating database name ${dbName}. This could be harmless if the database already existed.`
+                console.log(err.stack)
+            } else {
+                console.log("Non-error exception caught creating database " + dbName)
+            }
         }
     }
 

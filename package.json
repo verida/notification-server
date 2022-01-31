@@ -11,7 +11,7 @@
     "tests": "ts-mocha './test/**/*.ts'",
     "test": "ts-mocha",
     "lambda-deploy": "node_modules/.bin/claudia create --region us-east-2 --handler lambda.handler --deploy-proxy-api --no-optional-dependencies",
-    "lamnda-update": "node_modules/.bin/claudia update"
+    "lambda-update": "node_modules/.bin/claudia update"
   },
   "repository": "https://github.com/verida/notification-server",
   "author": "Chris <chris@verida.io>",
@@ -26,12 +26,12 @@
     "typescript": "^4.4.4"
   },
   "dependencies": {
-    "@verida/did-client": "^0.1.4",
-    "@verida/encryption-utils": "^1.1.2",
     "@verida/account-node": "^1.1.5",
     "@verida/client-ts": "^1.1.9",
-    "axios": "^0.24.0",
+    "@verida/did-client": "^0.1.4",
+    "@verida/encryption-utils": "^1.1.2",
     "aws-serverless-express": "^3.4.0",
+    "axios": "^0.24.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",

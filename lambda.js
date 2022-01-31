@@ -1,6 +1,6 @@
 'use strict'
 const awsServerlessExpress = require('aws-serverless-express')
-const app = require('./dist/server')
+const app = require('./dist/server-app')
 const binaryMimeTypes = [
 	'application/octet-stream',
 	'font/eot',

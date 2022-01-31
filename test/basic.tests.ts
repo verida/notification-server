@@ -11,7 +11,9 @@ import Db from '../src/db'
 const VERIDA_ENVIRONMENT = EnvironmentType.TESTNET
 const VERIDA_TESTNET_DEFAULT_SERVER = 'https://db.testnet.verida.io:5002/'
 
-const SERVER_URL = 'http://localhost:5011/'
+// const SERVER_URL = 'http://localhost:5011/'
+
+const SERVER_URL = 'https://vii2i9go8j.execute-api.us-east-2.amazonaws.com/latest/'
 
 const SENDER_CONTEXT = 'Verida Test: Any sending app'
 const SENDER_PRIVATE_KEY = '0x78d3b996ec98a9a536efdffbae40e5eaaf117765a587483c69195c9460165c37'
