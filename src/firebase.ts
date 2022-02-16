@@ -44,13 +44,22 @@ export default class Firebase {
 
     public static init() {
         if (!Firebase._fbInit) {
-            const fbServiceAccount = require('../' + process.env.FB_CREDS_PATH)
+            try {
+                const fbServiceAccount = require('../' + process.env.FB_CREDS_PATH)
 
-            initializeApp({
-                credential: cert(fbServiceAccount)
-            })
+                initializeApp({
+                    credential: cert(fbServiceAccount)
+                })
+    
+                Firebase._fbInit = true
+            } catch (e: unknown) {
+                if (e instanceof Error ) {
+                    console.trace(e)
+                }
 
-            Firebase._fbInit = true
+                throw e
+            }
+
         }
     }
 

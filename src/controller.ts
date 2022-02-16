@@ -161,11 +161,12 @@ export default class Controller {
                 console.log('No deviceIds found')
             }
         } catch (err: any) {
-            // don't respond with any error as we don't want the sender
-            // to know if a DID does / doesn't have a Vault or any information
-            // about this server's internals
+            // if the error is "not found" then we swallow the error so we
+            // don't give away if the DID does/doesn't have a vault
             if (err.error != 'not_found') {
+                // the error WAS NOT "not found" so throw
                 console.error(err)
+                throw err
             }
         }
 

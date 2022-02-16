@@ -1,5 +1,6 @@
 import Nano from 'nano'
 import EncryptionUtils from '@verida/encryption-utils'
+import e from 'express'
 
 export default class Db {
 
@@ -127,8 +128,12 @@ export default class Db {
             console.log("Created database: " + dbName)
         } catch (err: unknown) {
             if (err instanceof Error ) {
-                console.log `Error creating database name ${dbName}. This could be harmless if the database already existed.`
-                console.log(err.stack)
+                if (err.message.indexOf("the file already exists") >= 0) {
+                    console.log(`${dbName} already exists.`)
+                } else {
+                    console.log(`Error creating database name ${dbName}.`)
+                    console.log(err.stack)
+                }
             } else {
                 console.log("Non-error exception caught creating database " + dbName)
             }
