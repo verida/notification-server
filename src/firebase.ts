@@ -1,6 +1,6 @@
 const { cert, initializeApp } = require("firebase-admin/app")
-import { messaging } from 'firebase-admin'
-import { Message } from 'firebase-admin/lib/messaging/messaging-api'
+import {messaging} from 'firebase-admin'
+import {Message} from 'firebase-admin/lib/messaging/messaging-api'
 
 export default class Firebase {
 
@@ -22,7 +22,12 @@ export default class Firebase {
                     aps: {
                         contentAvailable: true
                     }
-                }
+                },
+                headers: {
+                    'apns-push-type': 'background',
+                    'apns-priority': '5',
+                    'apns-topic': process.env.VAULT_APP_ID
+                },
             }
         }
 
