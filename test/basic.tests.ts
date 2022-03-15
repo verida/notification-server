@@ -12,14 +12,15 @@ const VERIDA_ENVIRONMENT = EnvironmentType.TESTNET
 const VERIDA_TESTNET_DEFAULT_SERVER = 'https://db.testnet.verida.io:5002/'
 
 const SERVER_URL = 'http://localhost:5011/'
+//const SERVER_URL = 'https://vpns.testnet.verida.io:5011/'
 //const SERVER_URL = 'https://vii2i9go8j.execute-api.us-east-2.amazonaws.com/latest/'
 
 const SENDER_CONTEXT = 'Verida Test: Any sending app'
 const SENDER_PRIVATE_KEY = '0x78d3b996ec98a9a536efdffbae40e5eaaf117765a587483c69195c9460165c37'
 
-//const RECIPIENT_DID = 'did:vda:0x6B2a1bE81ee770cbB4648801e343E135e8D2Aa6F'
+const RECIPIENT_DID = 'did:vda:0xD5E7675bb544005213Ec816bBc96F94Dc39EEAb2'
 
-const RECIPIENT_DID = 'did:vda:0x97e3574571Cf38cbd62f39dc581fB01E0Cdf2E20'
+//const RECIPIENT_DID = 'did:vda:0x97e3574571Cf38cbd62f39dc581fB01E0Cdf2E20'
 const RECIPIENT_CONTEXT = 'Verida Test: Fake Vault'
 const RECIPIENT_DEVICE_ID = 'testDeviceId'
 const RECIPIENT_DEVICE_ID2 = 'testDeviceId2'

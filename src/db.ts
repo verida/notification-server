@@ -130,6 +130,7 @@ export default class Db {
             if (err instanceof Error ) {
                 if (err.message.indexOf("the file already exists") >= 0) {
                     console.log(`${dbName} already exists.`)
+                    console.log(err.message)
                 } else {
                     console.log(`Error creating database name ${dbName}.`)
                     console.log(err.stack)
