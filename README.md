@@ -1,4 +1,3 @@
-
 # Verida Notification Server
 
 This is a notification server to facilitate sending push notifications to users of the `Verida Vault`.
@@ -31,6 +30,12 @@ The server uses Firebase to manage push notifications.
 
 ### Configuration
 
+- Copy `sample.env` to `.env` and replace the sample values with real values.
+- You will need `verida-vault-fb-key.json` in the root directory. A copy of this file exists in BitWarden (name = "Notification Server verida-vault-fb-key.json")
+- For deployment, `.env.prod.json` must exist. See Deployment section below.
+
+
+
 Open `.env` to specify the CouchDB database connection details, Firebase credentials path and other useful options
 
 ### Starting
@@ -45,9 +50,46 @@ Run the tests with `yarn run tests`
 
 ## Deployment
 
+### Lambda deployment
+
+We use [Claudia.js](https://claudiajs.com/) to turn our Express app into an Express-on-Lambda app.
+
+Before doing any Lambda deployments you **MUST** translate your `.env` file (or one for production) to JSON as `.env.prod.json`.
+See the [Claudia Docs for information](https://claudiajs.com/news/2016/11/24/claudia-2.2.0-environment-vars.html).
+
+A copy of `.env.prod.json` for this deployment is in BitWarden (name= "Notification Server .env.prod.json") but is **NOT** checked into Github. 
+
+First time deployment can be done using:
+
+```
+yarn lambda-deploy
+```
+
+This does the following:
+
+- Create the Lambda (in us-east-2)
+- Create an (Edge) API Gateway pointing at it
+
+For brand new deployments, you will need to setup CloudWatch logging manually.
+
+- API Gateway ARN should be set to `arn:aws:iam::131554244047:role/APIGatewayLoggingRole` for the logging to work
+
+Updates can be done using:
+
+```
+yarn lambda-update
+```
+
+This uploads a new version of the code to the existing lambda.
+
+The command `yarn lambda-pack` exists to build a local zip file which can be helpful for debugging packaging issues.
+
+
+### Non Lambda (old) deployment
+
 See https://github.com/verida/infrastructure/blob/develop/notification_server.md
 
-Logs are available on CloudWatch. See the link above for more information. 
+Logs are available on CloudWatch. See the link above for more information.
 
 ## Limitations
 

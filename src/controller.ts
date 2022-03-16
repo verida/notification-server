@@ -12,44 +12,61 @@ export default class Controller {
      * @returns 
      */
     public static async register(req: Request, res: Response): Promise<Response> {
-        const did = <string> req.body.data.did
-        const context = <string> req.body.data.context
-        const deviceId = <string> req.body.data.deviceId
+        try {
+            const did = <string> req.body.data.did
+            const context = <string> req.body.data.context
+            const deviceId = <string> req.body.data.deviceId
 
-        // @todo verify signature
+            // @todo verify signature
 
-        if (!did) {
-            return res.status(400).send({
-                status: "fail",
-                message: "No DID specified"
-            })
-        }
-
-        if (!context) {
-            return res.status(400).send({
-                status: "fail",
-                message: "No context specified"
-            })
-        }
-
-        if (!deviceId) {
-            return res.status(400).send({
-                status: "fail",
-                message: "No deviceId specified"
-            })
-        }
-
-        // Save deviceId and DID mapping
-        await Db.saveDevice(deviceId, did, context)
-
-        return res.status(200).send({
-            status: "success",
-            data: {
-                did,
-                context,
-                deviceId
+            if (!did) {
+                return res.status(400).send({
+                    status: "fail",
+                    message: "No DID specified"
+                })
             }
-        })
+
+            if (!context) {
+                return res.status(400).send({
+                    status: "fail",
+                    message: "No context specified"
+                })
+            }
+
+            if (!deviceId) {
+                return res.status(400).send({
+                    status: "fail",
+                    message: "No deviceId specified"
+                })
+            }
+
+            // Save deviceId and DID mapping
+            await Db.saveDevice(deviceId, did, context)
+
+            return res.status(200).send({
+                status: "success",
+                data: {
+                    did,
+                    context,
+                    deviceId
+                }
+            })
+        } catch(e: unknown) {
+            let msg = null
+            if (typeof e === "string") {
+                msg = e
+            } else if (e instanceof Error) {
+                msg = e.message
+                console.log(e.stack)
+            }
+
+            console.log(msg)
+
+            return res.status(500).send( {
+                status: "error",
+                data: {error: msg}
+            })
+        }
     }
 
     public static async unregister(req: Request, res: Response): Promise<Response> {
@@ -144,11 +161,12 @@ export default class Controller {
                 console.log('No deviceIds found')
             }
         } catch (err: any) {
-            // don't respond with any error as we don't want the sender
-            // to know if a DID does / doesn't have a Vault or any information
-            // about this server's internals
+            // if the error is "not found" then we swallow the error so we
+            // don't give away if the DID does/doesn't have a vault
             if (err.error != 'not_found') {
+                // the error WAS NOT "not found" so throw
                 console.error(err)
+                throw err
             }
         }
 
