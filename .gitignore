@@ -1,5 +1,7 @@
 node_modules
 coverage
-.env.dev
+.env*
+.env
 dist/
 verida-vault-fb-key.json
+.DS_Store

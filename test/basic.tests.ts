@@ -11,16 +11,15 @@ import Db from '../src/db'
 const VERIDA_ENVIRONMENT = EnvironmentType.TESTNET
 const VERIDA_TESTNET_DEFAULT_SERVER = 'https://db.testnet.verida.io:5002/'
 
-const SERVER_URL = 'http://localhost:5011/'
+const SERVER_URL =  process.env.TESTS_SERVER_URL;
 //const SERVER_URL = 'https://vpns.testnet.verida.io:5011/'
 //const SERVER_URL = 'https://vii2i9go8j.execute-api.us-east-2.amazonaws.com/latest/'
 
 const SENDER_CONTEXT = 'Verida Test: Any sending app'
-const SENDER_PRIVATE_KEY = '0x78d3b996ec98a9a536efdffbae40e5eaaf117765a587483c69195c9460165c37'
+const SENDER_PRIVATE_KEY = process.env.TESTS_SENDER_PRIVATE_KEY
 
-const RECIPIENT_DID = 'did:vda:0xD5E7675bb544005213Ec816bBc96F94Dc39EEAb2'
+const RECIPIENT_DID = process.env.TESTS_RECIPIENT_DID
 
-//const RECIPIENT_DID = 'did:vda:0x97e3574571Cf38cbd62f39dc581fB01E0Cdf2E20'
 const RECIPIENT_CONTEXT = 'Verida Test: Fake Vault'
 const RECIPIENT_DEVICE_ID = 'testDeviceId'
 const RECIPIENT_DEVICE_ID2 = 'testDeviceId2'
@@ -80,10 +79,11 @@ describe("Test server", function() {
 
     describe("Register device functionality", function() {
         this.timeout(100000)
+        console.log(`Using SERVER_URL: ${SERVER_URL}`)
 
         it("Register a new device", async () => {
             server = await getAxios()
-
+            
             const response: any = await server.post(SERVER_URL + 'register', {
                 data: {
                     did: RECIPIENT_DID,
