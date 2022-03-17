@@ -12,10 +12,11 @@ export default class Controller {
      * @returns 
      */
     public static async register(req: Request, res: Response): Promise<Response> {
+        const did = <string> req.body.data.did
+        const context = <string> req.body.data.context
+        const deviceId = <string> req.body.data.deviceId        
         try {
-            const did = <string> req.body.data.did
-            const context = <string> req.body.data.context
-            const deviceId = <string> req.body.data.deviceId
+            console.log(`registering DID: ${did}, context: ${context}, deviceId: ${deviceId}`)
 
             // @todo verify signature
 
@@ -43,6 +44,8 @@ export default class Controller {
             // Save deviceId and DID mapping
             await Db.saveDevice(deviceId, did, context)
 
+            console.log(`registration success for DID: ${did}, context: ${context}, deviceId: ${deviceId}`)
+
             return res.status(200).send({
                 status: "success",
                 data: {
@@ -60,6 +63,7 @@ export default class Controller {
                 console.log(e.stack)
             }
 
+            console.log(`ERROR registering for notificaiton. DID: ${did}, context: ${context}, deviceId: ${deviceId}`)
             console.log(msg)
 
             return res.status(500).send( {
@@ -146,6 +150,7 @@ export default class Controller {
         }
 
         try {
+            console.log(`Looking up deviceIds for DID: ${did} and context: ${context}`)
             const deviceIds = await Db.getDevices(did, context)
             try {
                 if (deviceIds) {
