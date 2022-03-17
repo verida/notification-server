@@ -79,7 +79,7 @@ export default class Controller {
         const deviceId = <string> req.body.data.deviceId
 
         // @todo verify signature
-        console.log('unregister')
+        console.log(`unregistering DID: ${did}, context: ${context}, deviceId: ${deviceId}`)
 
         if (!did) {
             return res.status(400).send({
