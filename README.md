@@ -59,6 +59,11 @@ See the [Claudia Docs for information](https://claudiajs.com/news/2016/11/24/cla
 
 A copy of `.env.prod.json` for this deployment is in BitWarden (name= "Notification Server .env.prod.json") but is **NOT** checked into Github. 
 
+You will need your [`AWS_PROFILE` set](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html). There are many ways to do this, but a simple one is:
+```
+export AWS_PROFILE=verida-prod
+```
+
 First time deployment can be done using:
 
 ```

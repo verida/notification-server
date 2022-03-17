@@ -147,24 +147,34 @@ export default class Controller {
 
         try {
             const deviceIds = await Db.getDevices(did, context)
+            try {
+                if (deviceIds) {
+                    console.log(`Sending ping to deviceIds: :- ${deviceIds}`);
 
-            if (deviceIds) {
-                console.log(`Sending ping to deviceIds: :- ${deviceIds}`);
-
-                for(const deviceId of deviceIds) {
-                    const success = await Firebase.ping(did, context, deviceId);
-                    if (!success) {
-                        console.log(`deviceId notification failed :- ${deviceId}`);
+                    for(const deviceId of deviceIds) {
+                        const success = await Firebase.ping(did, context, deviceId);
+                        if (!success) {
+                            console.log(`deviceId notification failed :- ${deviceId}`);
+                        }
                     }
+                } else {
+                    console.log('No deviceIds found')
                 }
-            } else {
-                console.log('No deviceIds found')
+            } catch (err: any) {
+                // if the error is "not found" then we swallow the error so we
+                // don't give away if the DID does/doesn't have a vault
+                if (err.error != 'not_found') {
+                    // the error WAS NOT "not found" so throw
+                    // log this below in the catch around all this
+                    throw err
+                } else {
+                    console.log(`There was an error pinging at least one of these DIDs: ${deviceIds}`)
+                }
             }
         } catch (err: any) {
             // if the error is "not found" then we swallow the error so we
-            // don't give away if the DID does/doesn't have a vault
+            // don't give away if the DID does/doesn't have a vault            
             if (err.error != 'not_found') {
-                // the error WAS NOT "not found" so throw
                 console.error(err)
                 throw err
             }
