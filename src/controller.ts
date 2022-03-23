@@ -14,42 +14,63 @@ export default class Controller {
     public static async register(req: Request, res: Response): Promise<Response> {
         const did = <string> req.body.data.did
         const context = <string> req.body.data.context
-        const deviceId = <string> req.body.data.deviceId
+        const deviceId = <string> req.body.data.deviceId        
+        try {
+            console.log(`registering DID: ${did}, context: ${context}, deviceId: ${deviceId}`)
 
-        // @todo verify signature
+            // @todo verify signature
 
-        if (!did) {
-            return res.status(400).send({
-                status: "fail",
-                message: "No DID specified"
-            })
-        }
-
-        if (!context) {
-            return res.status(400).send({
-                status: "fail",
-                message: "No context specified"
-            })
-        }
-
-        if (!deviceId) {
-            return res.status(400).send({
-                status: "fail",
-                message: "No deviceId specified"
-            })
-        }
-
-        // Save deviceId and DID mapping
-        await Db.saveDevice(deviceId, did, context)
-
-        return res.status(200).send({
-            status: "success",
-            data: {
-                did,
-                context,
-                deviceId
+            if (!did) {
+                return res.status(400).send({
+                    status: "fail",
+                    message: "No DID specified"
+                })
             }
-        })
+
+            if (!context) {
+                return res.status(400).send({
+                    status: "fail",
+                    message: "No context specified"
+                })
+            }
+
+            if (!deviceId) {
+                return res.status(400).send({
+                    status: "fail",
+                    message: "No deviceId specified"
+                })
+            }
+
+            // Save deviceId and DID mapping
+            await Db.saveDevice(deviceId, did, context)
+
+            console.log(`registration success for DID: ${did}, context: ${context}, deviceId: ${deviceId}`)
+
+            return res.status(200).send({
+                status: "success",
+                data: {
+                    did,
+                    context,
+                    deviceId
+                }
+            })
+        } catch(e: unknown) {
+            let msg = null
+            if (typeof e === "string") {
+                msg = e
+            } else if (e instanceof Error) {
+                msg = e.message
+                console.log(e.stack)
+            }
+
+            console.log(`ERROR registering for notificaiton. DID: ${did}, context: ${context}, deviceId: ${deviceId}`)
+            console.log(msg)
+
+            return res.status(500).send( {
+                status: "error",
+                data: {error: msg}
+            })
+        }
     }
 
     public static async unregister(req: Request, res: Response): Promise<Response> {
@@ -58,7 +79,7 @@ export default class Controller {
         const deviceId = <string> req.body.data.deviceId
 
         // @todo verify signature
-        console.log('unregister')
+        console.log(`unregistering DID: ${did}, context: ${context}, deviceId: ${deviceId}`)
 
         if (!did) {
             return res.status(400).send({
@@ -129,26 +150,38 @@ export default class Controller {
         }
 
         try {
+            console.log(`Looking up deviceIds for DID: ${did} and context: ${context}`)
             const deviceIds = await Db.getDevices(did, context)
+            try {
+                if (deviceIds) {
+                    console.log(`Sending ping to deviceIds: :- ${deviceIds}`);
 
-            if (deviceIds) {
-                console.log(`Sending ping to deviceIds: :- ${deviceIds}`);
-
-                for(const deviceId of deviceIds) {
-                    const success = await Firebase.ping(did, context, deviceId);
-                    if (!success) {
-                        console.log(`deviceId notification failed :- ${deviceId}`);
+                    for(const deviceId of deviceIds) {
+                        const success = await Firebase.ping(did, context, deviceId);
+                        if (!success) {
+                            console.log(`deviceId notification failed :- ${deviceId}`);
+                        }
                     }
+                } else {
+                    console.log('No deviceIds found')
                 }
-            } else {
-                console.log('No deviceIds found')
+            } catch (err: any) {
+                // if the error is "not found" then we swallow the error so we
+                // don't give away if the DID does/doesn't have a vault
+                if (err.error != 'not_found') {
+                    // the error WAS NOT "not found" so throw
+                    // log this below in the catch around all this
+                    throw err
+                } else {
+                    console.log(`There was an error pinging at least one of these DIDs: ${deviceIds}`)
+                }
             }
         } catch (err: any) {
-            // don't respond with any error as we don't want the sender
-            // to know if a DID does / doesn't have a Vault or any information
-            // about this server's internals
+            // if the error is "not found" then we swallow the error so we
+            // don't give away if the DID does/doesn't have a vault            
             if (err.error != 'not_found') {
                 console.error(err)
+                throw err
             }
         }
 
