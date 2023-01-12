@@ -17,14 +17,14 @@
   "files": [
     "**/*.ts",
     "**/*.js",
-    "**/*.mjs",    
-    "**/*.cjs",    
+    "**/*.mjs",
+    "**/*.cjs",
     "**/*.json",
-    "**/*.svg",    
-    "**/*.xml",    
-    "**/*.yml",    
+    "**/*.svg",
+    "**/*.xml",
+    "**/*.yml",
     "**/*.lock",
-    "**/*.bnf",        
+    "**/*.bnf",
     "**/*.map",
     ".nvmrc"
   ],
@@ -42,9 +42,9 @@
     "typescript": "^4.4.4"
   },
   "dependencies": {
-    "@verida/account-node": "^1.1.9",
-    "@verida/client-ts": "^1.1.13",
-    "@verida/did-client": "^0.1.8",
+    "@verida/account-node": "^2.0.0-rc7",
+    "@verida/client-ts": "^2.0.0-rc7",
+    "@verida/did-client": "^2.0.0-rc6",
     "@verida/encryption-utils": "^1.1.3",
     "aws-serverless-express": "^3.4.0",
     "axios": "^0.24.0",
