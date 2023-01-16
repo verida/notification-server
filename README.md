@@ -61,13 +61,17 @@ A copy of `.env.prod.json` for this deployment is in BitWarden (name= "Notificat
 
 You will need your [`AWS_PROFILE` set](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html). There are many ways to do this, but a simple one is:
 ```
-export AWS_PROFILE=verida-prod
+export AWS_PROFILE=verida-dev (or AWS_PROFILE=verida-dev for prod)
 ```
 
 First time deployment can be done using:
 
 ```
-yarn lambda-deploy
+yarn acacia-lambda-deploy (acacia testnet)
+
+or
+
+yarn lambda-deploy (prod)
 ```
 
 This does the following:
@@ -75,14 +79,22 @@ This does the following:
 - Create the Lambda (in us-east-2)
 - Create an (Edge) API Gateway pointing at it
 
-For brand new deployments, you will need to setup CloudWatch logging manually.
+For brand new deployments, you will need to setup DNS and CloudWatch logging manually.
 
-- API Gateway ARN should be set to `arn:aws:iam::131554244047:role/APIGatewayLoggingRole` for the logging to work
+- Prod API Gateway log role ARN should be set to `arn:aws:iam::131554244047:role/APIGatewayLoggingRole` for the logging to work
+- Acacia API Gateway log role ARM should be set to `arn:aws:iam::737954963756:role/apiGatewayLogs` 
+
+You should also increase the Lambda timeout to 20 seconds. 
+
 
 Updates can be done using:
 
 ```
-yarn lambda-update
+yarn acacia-lambda-update (acacia testnet)
+
+or
+
+yarn lambda-update (prod)
 ```
 
 This uploads a new version of the code to the existing lambda.
