@@ -12,10 +12,8 @@
     "test": "ts-mocha",
     "lambda-deploy": "rm -rf dist && tsc && yarn claudia create --region us-east-2 --handler lambda.handler --deploy-proxy-api --no-optional-dependencies --set-env-from-json .env.prod.json --config claudia.json",
     "lambda-update": "rm -rf dist && tsc && yarn claudia update --set-env-from-json .env.prod.json --config claudia.json",
-
     "acacia-lambda-deploy": "rm -rf dist && tsc && yarn claudia create --region us-east-2 --handler lambda.handler --deploy-proxy-api --no-optional-dependencies --set-env-from-json .env.acacia.json --config claudia.acacia.json",
     "acacia-lambda-update": "rm -rf dist && tsc && yarn claudia update --set-env-from-json .env.acacia.json --config claudia.acacia.json",
-
     "lambda-pack": "rm -rf dist && tsc && yarn claudia pack --no-optional-dependencies"
   },
   "files": [
@@ -46,10 +44,10 @@
     "typescript": "^4.4.4"
   },
   "dependencies": {
-    "@verida/account-node": "^2.0.0-rc7",
-    "@verida/client-ts": "^2.0.0-rc7",
-    "@verida/did-client": "^2.0.0-rc6",
-    "@verida/encryption-utils": "^1.1.3",
+    "@verida/account-node": "^2.0.0",
+    "@verida/client-ts": "^2.0.1",
+    "@verida/did-client": "^2.0.0",
+    "@verida/encryption-utils": "^2.0.0",
     "aws-serverless-express": "^3.4.0",
     "axios": "^0.24.0",
     "body-parser": "^1.19.0",
