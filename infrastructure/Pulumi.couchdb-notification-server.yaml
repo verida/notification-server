@@ -1,0 +1,23 @@
+config:
+  aws:region: us-east-2
+  notification-server-couch-db:server:
+    couchConfig:
+      accessJwtSignPk:
+        secure: AAABAI6FZ6hnA1Tiz5MjcPKWpEHrgbRzju5ITDezEokZBfYb+lG8WoDzgeE3u44fAzc5eg==
+      dbPass:
+        secure: AAABAFTzIc9L3K2IT32aRwJKjvPB+1K4VObVELqiZimWHjJcURyD4LRLUXxYgmv3lh40uQ==
+      dbUsername:
+        secure: AAABACwEC29HhMdTeV1m+d7Vdk9AUI7DlY/ada76f9VVj1xxhePc8Yzck0KJsdwq1wAqEg==
+    instanceConfig:
+      albSecondaryAvailabilityZone: b
+      availabilityZone: a
+      dataVolumeIOPS: "4000"
+      dataVolumeSize: "20"
+      instanceType: t3a.micro
+      keyName: testnet_data_nodes
+    nameConfig:
+      networkName: acacia
+      nodeName: ntfctn-couchdb
+      provider: aws
+      regionName: use2
+      rootDomain: verida.tech

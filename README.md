@@ -101,12 +101,10 @@ This uploads a new version of the code to the existing lambda.
 
 The command `yarn lambda-pack` exists to build a local zip file which can be helpful for debugging packaging issues.
 
+## Data
 
-### Non Lambda (old) deployment
+See the folder `/infrastructure` for playbooks to setup a new CouchDB database
 
-See https://github.com/verida/infrastructure/blob/develop/notification_server.md
-
-Logs are available on CloudWatch. See the link above for more information.
 
 ## Limitations
 
