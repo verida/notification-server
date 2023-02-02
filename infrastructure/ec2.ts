@@ -4,7 +4,68 @@ import * as awsx from '@pulumi/awsx';
 import * as cloudinit from '@pulumi/cloudinit';
 import * as pulumi from '@pulumi/pulumi';
 import { Output } from '@pulumi/pulumi';
-import { CouchConfig, InstanceConfig, NameConfig, shortName } from './types';
+import { alphaonly_name, CouchConfig, InstanceConfig, NameConfig, shortName } from './types';
+
+
+
+export const cloudWatchAgentConfig = `  
+  {
+    "agent": {
+      "metrics_collection_interval": 60,
+      "run_as_user": "root"
+    },
+    "metrics": {
+      "aggregation_dimensions": [
+        [
+          "InstanceId"
+        ]
+      ],
+      "metrics_collected": {
+        "cpu": {
+          "measurement": [
+            "cpu_usage_idle",
+            "cpu_usage_iowait",
+            "cpu_usage_user",
+            "cpu_usage_system"
+          ],
+          "metrics_collection_interval": 60,
+          "totalcpu": false
+        },
+        "disk": {
+          "measurement": [
+            "used_percent",
+            "inodes_free"
+          ],
+          "metrics_collection_interval": 60,
+          "resources": [
+            "*"
+          ]
+        },
+        "diskio": {
+          "measurement": [
+            "io_time"
+          ],
+          "metrics_collection_interval": 60,
+          "resources": [
+            "*"
+          ]
+        },
+        "mem": {
+          "measurement": [
+            "mem_used_percent"
+          ],
+          "metrics_collection_interval": 60
+        },
+        "swap": {
+          "measurement": [
+            "swap_used_percent"
+          ],
+          "metrics_collection_interval": 60
+        }
+      }
+    }  
+  }
+`
 
 export function couchdbIni(couchConfig: CouchConfig) {
   const hmacDefaultB64 = Buffer.from(couchConfig.accessJwtSignPk).toString('base64');
@@ -73,12 +134,17 @@ function userData(couchConfig: CouchConfig) {
           owner: 'root:root',
           path: '/opt/couchdb/etc/local.d/10-couchdb.ini',
           content: couchdbIni(couchConfig)
+        },{
+          permissions: '0664',
+          path: '/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json',
+          content: cloudWatchAgentConfig,
         }],
         runcmd: [
         `
         yum install -y couchdb
-        systemctl enable couchdb
+        yum install -y amazon-cloudwatch-agent
         chown -R couchdb /data
+        systemctl enable couchdb
         service couchdb start
         `,
         ]
@@ -118,16 +184,21 @@ const veridaCommonInstanceRole = new aws.iam.Role("VeridaCommonInstanceRole", {
 });
 
 // attach the policy to the role
-const policyAttachment = new aws.iam.RolePolicyAttachment("logStreamAttachemnt", {
+const policyAttachmentLS = new aws.iam.RolePolicyAttachment("logStreamAttachemnt", {
   role: veridaCommonInstanceRole.name,
   policyArn: cloudWatchPolicy.arn,
 });
+
+const policyAttachmentCWA = new aws.iam.RolePolicyAttachment("CWAgentAttachemnt", {
+  role: veridaCommonInstanceRole.name,
+  policyArn: "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
+});
+
 
 // create an instance of the role which we will pass to the EC2 instance
 const cloudWatchIAMInstanceProfile = new aws.iam.InstanceProfile(`cwIAMInstanceProfile`, {
   role: veridaCommonInstanceRole.name
 })
-
 
 
 // AMI - Amazon Linux
@@ -155,7 +226,7 @@ export function createInstance(vpc: awsx.ec2.Vpc,
 
 
   const snapshotPolicy = new aws.dlm.LifecyclePolicy(`${prefix}-snapshots`, {
-    description: 'Snapshot backups',
+    description: `${alphaonly_name(nameConfig)} daily snapshot`,
     executionRoleArn: dlmLifecycleRole.arn,
     policyDetails: {
       resourceTypes: ['VOLUME'],
@@ -164,7 +235,7 @@ export function createInstance(vpc: awsx.ec2.Vpc,
         createRule: {
           interval: 24,
           intervalUnit: 'HOURS',
-          times: '05:45',
+          times: '05:25',
         },
         name: 'Daily snapshots',
         retainRule: {
@@ -172,6 +243,8 @@ export function createInstance(vpc: awsx.ec2.Vpc,
         },
         tagsToAdd: {
           SnapshotCreator: 'DLM',
+          Host: shortName(nameConfig),
+          Name: `${alphaonly_name(nameConfig)} daily`,
         },
         // disabling this because Pulumi won't let me create weekly snapshots
         // }, {
@@ -195,7 +268,6 @@ export function createInstance(vpc: awsx.ec2.Vpc,
   });
 
   const zoneName = `${aws.config.region}${availabilityZone}`
-  console.log(`Looking for az ${zoneName}`)
 
   let subnet = vpc.subnets.apply(subnets => {
     for (const sn of subnets) {
@@ -256,7 +328,7 @@ export function createInstance(vpc: awsx.ec2.Vpc,
       encrypted: true
     },
     ebsBlockDevices: [{
-      //snapshotId: "", // set this if restoring
+      snapshotId: "snap-077bb1977c3ff2ed8", // set this if restoring
       deviceName: '/dev/sdf',
       volumeSize: dataVolumeSize,
       volumeType: 'gp3',
