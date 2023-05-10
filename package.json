@@ -44,10 +44,10 @@
     "typescript": "^4.4.4"
   },
   "dependencies": {
-    "@verida/account-node": "^2.1.0",
-    "@verida/client-ts": "^2.1.0",
-    "@verida/did-client": "^2.1.0",
-    "@verida/encryption-utils": "^2.0.4",
+    "@verida/account-node": "^2.3.4",
+    "@verida/client-ts": "^2.3.4",
+    "@verida/did-client": "^2.3.4",
+    "@verida/encryption-utils": "^2.2.1",
     "aws-serverless-express": "^3.4.0",
     "axios": "^0.24.0",
     "body-parser": "^1.19.0",
@@ -57,6 +57,6 @@
     "express-basic-auth": "git+https://github.com/Mozzler/express-basic-auth.git",
     "firebase-admin": "^10.0.0",
     "memory-cache": "^0.2.0",
-    "nano": "^9.0.5"
+    "nano": "^10.1.2"
   }
 }
