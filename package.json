@@ -44,10 +44,10 @@
     "typescript": "^4.4.4"
   },
   "dependencies": {
-    "@verida/account-node": "^2.3.4",
-    "@verida/client-ts": "^2.3.4",
-    "@verida/did-client": "^2.3.4",
-    "@verida/encryption-utils": "^2.2.1",
+    "@verida/account-node": "^2.3.9",
+    "@verida/client-ts": "^2.3.9",
+    "@verida/did-client": "^2.3.9",
+    "@verida/encryption-utils": "^2.2.3",
     "aws-serverless-express": "^3.4.0",
     "axios": "^0.24.0",
     "body-parser": "^1.19.0",
