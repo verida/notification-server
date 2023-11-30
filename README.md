@@ -50,6 +50,12 @@ Run the tests with `yarn run tests`
 
 - Only one notification server can be allocated to an application context (a current limitation of the `DID Registry` and `client-ts` library)
 
+## Deployment
+
+See https://github.com/verida/infrastructure/blob/develop/notification_server.md
+
+Logs are available on CloudWatch. See the link above for more information. 
+
 ## @TODO:
 
 - Add verifying (see @todo)
