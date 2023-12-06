@@ -5,6 +5,7 @@ import cors from 'cors'
 import Db from './db'
 const basicAuth = require('express-basic-auth')
 import RequestValidator from './request-validator'
+import Controller from './controller'
 
 import dotenv from 'dotenv'
 dotenv.config()
@@ -18,6 +19,7 @@ app.use(cors({}))
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
+app.use(router.post('/ping', Controller.ping))
 app.use(basicAuth({
   authorizer: validator.authorize,
   authorizeAsync: true,
