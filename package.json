@@ -10,10 +10,10 @@
     "start": "node dist/server.js",
     "tests": "ts-mocha './test/**/*.ts'",
     "test": "ts-mocha",
-    "lambda-deploy": "rm -rf dist && tsc && yarn claudia create --region us-east-2 --handler lambda.handler --deploy-proxy-api --no-optional-dependencies --set-env-from-json .env.prod.json --config claudia.json",
-    "lambda-update": "rm -rf dist && tsc && yarn claudia update --set-env-from-json .env.prod.json --config claudia.json",
-    "acacia-lambda-deploy": "rm -rf dist && tsc && yarn claudia create --region us-east-2 --handler lambda.handler --deploy-proxy-api --no-optional-dependencies --set-env-from-json .env.acacia.json --config claudia.acacia.json",
-    "acacia-lambda-update": "rm -rf dist && tsc && yarn claudia update --set-env-from-json .env.acacia.json --config claudia.acacia.json",
+    "lambda-deploy": "export AWS_PROFILE=verida-original && rm -rf dist && tsc && yarn claudia create --region us-east-2 --handler lambda.handler --deploy-proxy-api --no-optional-dependencies --set-env-from-json .env.prod.json --config claudia.json",
+    "lambda-update": "export AWS_PROFILE=verida-original && rm -rf dist && tsc && yarn claudia update --set-env-from-json .env.prod.json --config claudia.json",
+    "acacia-lambda-deploy": "export AWS_PROFILE=verida-testnet && rm -rf dist && tsc && yarn claudia create --region us-east-2 --handler lambda.handler --deploy-proxy-api --no-optional-dependencies --set-env-from-json .env.acacia.json --config claudia.acacia.json",
+    "acacia-lambda-update": "export AWS_PROFILE=verida-testnet && rm -rf dist && tsc && yarn claudia update --set-env-from-json .env.acacia.json --config claudia.acacia.json",
     "lambda-pack": "rm -rf dist && tsc && yarn claudia pack --no-optional-dependencies"
   },
   "files": [
